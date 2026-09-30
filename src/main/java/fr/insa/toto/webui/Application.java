@@ -1,4 +1,4 @@
-package fr.insa;
+package fr.insa.toto.webui;
 
 import com.vaadin.flow.theme.aura.Aura;
 import org.springframework.boot.SpringApplication;
