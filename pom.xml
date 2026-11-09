@@ -32,6 +32,7 @@
     </dependencyManagement>
 
     <dependencies>
+        <!-- =========== AJOUTS FdB ================================== -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-text</artifactId>
@@ -71,6 +72,8 @@
             <artifactId>spring-boot-starter-jdbc</artifactId>
         </dependency>
         -->
+        <!-- =========== FIN AJOUTS FdB ================================== -->
+        
         <dependency>
             <groupId>com.vaadin</groupId>
             <!-- Replace artifactId with vaadin-core to use only free components or vaadin pour
