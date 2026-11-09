@@ -1,0 +1,68 @@
+2026-11-09 12:15:09.994196+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Colonne "SURNOM" non trouvée
+Column "SURNOM" not found; SQL statement:
+INSERT INTO utilisateur (surnom, pass) VALUES (?, ?) [42122-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.table.Table.getColumn(Table.java:778)
+	at org.h2.command.Parser.parseColumn(Parser.java:1174)
+	at org.h2.command.Parser.parseColumnList(Parser.java:1159)
+	at org.h2.command.Parser.parseInsert(Parser.java:1533)
+	at org.h2.command.Parser.parsePrepared(Parser.java:701)
+	at org.h2.command.Parser.parse(Parser.java:584)
+	at org.h2.command.Parser.parse(Parser.java:559)
+	at org.h2.command.Parser.prepareCommand(Parser.java:487)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:647)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:563)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1160)
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93)
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315)
+	at fr.insa.toto.model.GestionUtilisateursDirect.creeUtilisateur(GestionUtilisateursDirect.java:13)
+	at fr.insa.toto.model.GestionUtilisateursDirect.demandeCreationUtilisateur(GestionUtilisateursDirect.java:33)
+	at fr.insa.toto.model.GestionUtilisateursDirect.menuGestionUtilisateurs(GestionUtilisateursDirect.java:70)
+	at fr.insa.toto.model.MenuPrincipalTexte.menuPrincipal(MenuPrincipalTexte.java:24)
+	at fr.insa.toto.model.MenuPrincipalTexte.main(MenuPrincipalTexte.java:34)
+2026-11-09 12:15:16.947167+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Colonne "SURNOM" non trouvée
+Column "SURNOM" not found; SQL statement:
+SELECT id, surnom, pass FROM utilisateur [42122-240]
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:514)
+	at org.h2.message.DbException.getJdbcSQLException(DbException.java:489)
+	at org.h2.message.DbException.get(DbException.java:223)
+	at org.h2.message.DbException.get(DbException.java:199)
+	at org.h2.expression.ExpressionColumn.getColumnException(ExpressionColumn.java:244)
+	at org.h2.expression.ExpressionColumn.optimizeOther(ExpressionColumn.java:226)
+	at org.h2.expression.ExpressionColumn.optimize(ExpressionColumn.java:213)
+	at org.h2.command.query.Select.lambda$prepareExpressions$2(Select.java:1209)
+	at java.base/java.util.ArrayList.replaceAllRange(ArrayList.java:1811)
+	at java.base/java.util.ArrayList.replaceAll(ArrayList.java:1801)
+	at org.h2.command.query.Select.prepareExpressions(Select.java:1209)
+	at org.h2.command.query.Query.prepare(Query.java:235)
+	at org.h2.command.Parser.prepareCommand(Parser.java:492)
+	at org.h2.engine.SessionLocal.prepareLocal(SessionLocal.java:647)
+	at org.h2.engine.SessionLocal.prepareCommand(SessionLocal.java:563)
+	at org.h2.jdbc.JdbcConnection.prepareCommand(JdbcConnection.java:1160)
+	at org.h2.jdbc.JdbcPreparedStatement.<init>(JdbcPreparedStatement.java:93)
+	at org.h2.jdbc.JdbcConnection.prepareStatement(JdbcConnection.java:315)
+	at fr.insa.toto.model.GestionUtilisateursDirect.listeTousUtilisateurs(GestionUtilisateursDirect.java:43)
+	at fr.insa.toto.model.GestionUtilisateursDirect.menuGestionUtilisateurs(GestionUtilisateursDirect.java:68)
+	at fr.insa.toto.model.MenuPrincipalTexte.menuPrincipal(MenuPrincipalTexte.java:24)
+	at fr.insa.toto.model.MenuPrincipalTexte.main(MenuPrincipalTexte.java:34)
+2026-11-09 12:19:17.819743+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "UTILISATEUR" not found (this database is empty); SQL statement:
+INSERT INTO utilisateur (nom, pass) VALUES (?, ?) [42104-240]
+2026-11-09 12:19:20.638916+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Table "UTILISATEUR" not found (this database is empty); SQL statement:
+SELECT id, nom, pass FROM utilisateur [42104-240]
+2026-11-09 12:19:55.001171+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "CREATE TABLE utilisateur (id INT PRIMARY KEY [*]GENERATED ALWAYS AS IDENTITY,\000anom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL)"; attendu "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"
+Syntax error in SQL statement "CREATE TABLE utilisateur (id INT PRIMARY KEY [*]GENERATED ALWAYS AS IDENTITY,\000anom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE utilisateur (id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+nom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL) [42001-240]
+2026-11-09 12:22:22.058335+01:00 jdbc[3]: exception
+org.h2.jdbc.JdbcSQLSyntaxErrorException: Erreur de syntaxe dans l'instruction SQL "CREATE TABLE utilisateur (id INT PRIMARY KEY [*]GENERATED ALWAYS AS IDENTITY,\000anom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL)"; attendu "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"
+Syntax error in SQL statement "CREATE TABLE utilisateur (id INT PRIMARY KEY [*]GENERATED ALWAYS AS IDENTITY,\000anom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL)"; expected "HASH, CONSTRAINT, COMMENT, UNIQUE, NOT NULL, CHECK, REFERENCES, ,, )"; SQL statement:
+CREATE TABLE utilisateur (id INT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
+nom VARCHAR(50) NOT NULL UNIQUE,pass VARCHAR(30) NOT NULL) [42001-240]

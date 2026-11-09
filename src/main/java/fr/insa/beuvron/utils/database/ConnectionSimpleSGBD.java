@@ -21,6 +21,8 @@ package fr.insa.beuvron.utils.database;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Quelques méthodes utilitaires pour se connecter à divers SGBD.
@@ -38,40 +40,45 @@ import java.sql.SQLException;
 public class ConnectionSimpleSGBD {
 
     /**
-     * permet de basculer facilement entre plusieurs SGBD.
-     * <p>
-     * il suffit de commenter/decommenter pour avoir la ligne correspondant au
-     * sgbd que vous souhaitez.
-     * </p>
-     * <p>
+     * permet de selectionner le SGBD utilisé
+     */
+    public static SGBDPossibles SGBD = SGBDPossibles.H2FILE;
+
+    // à modifier
+    public static String LOGIN_SUR_SERVEUR_M3 = "m3_fdebertranddeb01";
+    public static String PASS_SUR_SERVEUR_M3 = "donnez le votre";
+
+    /**
      * ATTENTION : chaque appel à defautCon crée une nouvelle connection à la
      * BdD. Vous ne devez pas l'utiliser à chaque fois que vous voulez accéder à
      * la base de donnée. Vous devez conserver la connection renvoyée par
      * defaultCon pour la ré-utiliser.
-     * </p>
      *
      * @return
      */
     public static Connection defaultCon() throws SQLException {
-        return mysqlServeurPourM3();
-//        return h2InMemory("test");
-//        return h2InFile("bdd");
+        if (SGBD == SGBDPossibles.MYSQL) {
+            return mysqlServeurPourM3();
+        } else if (SGBD == SGBDPossibles.H2FILE) {
+            return h2InFile("./h2BdD/bdd");
+        } else if (SGBD == SGBDPossibles.H2MEMORY) {
+            return h2InMemory("h2BdD");
+        } else {
+            throw new Error("SGBD non couvert par ConnectionSimpleSGBD");
+        }
     }
 
-    /** demande une connection à un serveur MySQL */
+    /**
+     * demande une connection à un serveur MySQL
+     */
     public static Connection connectMySQL(String host, int port,
             String database, String user, String pass) throws SQLException {
         // ce test de la classe du driver n'est plus censée être indispensable
         // mais j'ai des problème si je ne l'utilise pas lorsque je porte
         // mon application web dans un serveur tomcat
         // donc je l'ajoute.
-        // en cas de problème, je transforme l'exception ClassNotFoundException
-        // en SQLException pour ne pas surcharger les throws
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-        } catch (ClassNotFoundException ex) {
-            throw new SQLException("driver mysql not found", ex);
-        }
+        Class dmysql = com.mysql.cj.jdbc.Driver.class;
+        Logger.getGlobal().log(Level.INFO, "Driver mysql {0} found", dmysql.getCanonicalName());
         Connection con = DriverManager.getConnection(
                 "jdbc:mysql://" + host + ":" + port + "/" + database, database, pass);
         // fixe le plus haut degré d'isolation entre transactions
@@ -87,7 +94,7 @@ public class ConnectionSimpleSGBD {
      * Un serveur mysql installé pour le module M3.
      * <p>
      * le nom de la base de donnée est le même que le nom d'utilisateur d'où le
-     * doublon dans l'appel
+     * doublon dans l'appel.
      * </p>
      *
      * @return
@@ -95,9 +102,9 @@ public class ConnectionSimpleSGBD {
      */
     public static Connection mysqlServeurPourM3() throws SQLException {
         return connectMySQL("92.222.25.165", 3306,
-                "m3_fdebertranddeb01",
-                "m3_fdebertranddeb01",
-                "je ne le donne pas");
+                LOGIN_SUR_SERVEUR_M3,
+                LOGIN_SUR_SERVEUR_M3,
+                PASS_SUR_SERVEUR_M3);
     }
 
     /**
@@ -121,12 +128,10 @@ public class ConnectionSimpleSGBD {
      * @return
      */
     public static Connection h2InMemory(String name) throws SQLException {
-        try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException ex) {
-            throw new SQLException("driver h2 not found", ex);
-        }
-        return DriverManager.getConnection("jdbc:h2:mem:" + name, null, null);
+        // comme pour mysql, j'essaye de forcer la prise en compte du driver
+        Class dh2 = org.h2.Driver.class;
+        Logger.getGlobal().log(Level.INFO, "Driver h2 {0} found", dh2.getCanonicalName());
+        return DriverManager.getConnection("jdbc:h2:mem:" + name, "H2User", "H2Pass");
     }
 
     /**
@@ -149,55 +154,10 @@ public class ConnectionSimpleSGBD {
      * @return
      */
     public static Connection h2InFile(String path) throws SQLException {
-       try {
-            Class.forName("org.h2.Driver");
-        } catch (ClassNotFoundException ex) {
-            throw new SQLException("driver h2 not found", ex);
-        }
-        return DriverManager.getConnection("jdbc:h2:file:" + path, null, null);
+        // comme pour mysql, j'essaye de forcer la prise en compte du driver
+        Class dh2 = org.h2.Driver.class;
+        Logger.getGlobal().log(Level.INFO, "Driver h2 {0} found", dh2.getCanonicalName());
+        return DriverManager.getConnection("jdbc:h2:file:" + path, "H2User", "H2Pass");
     }
 
-    /**
-     * tente de renvoyer la commande SQL permettant de déclarer qu'une PRIMARY
-     * KEY doit être générée automatiquement par le sgbd.
-     * <p>
-     * Attention : ce n'est pas garanti : repose sur le nom du sgbd tel que
-     * renvoyé par getMetaData().getDatabaseProductName sur la connection. Si
-     * les noms renvoyés changent, cette méthode ne sera plus valide. </p>
-     * <p>
-     * Pour l'instant, on suppose que si le nom renvoyé vaut "MySQL" alors il
-     * faut utiliser "AUTO_INCREMENT" sinon, il faut utiliser "GENERATED ALWAYS
-     * AS IDENTITY" </p>
-     * <p>
-     * Note1 : MariaDB version 11.1.2 renvoie le nom MySQL,donc cette méthode
-     * fonctionne pour MariaDB (en espérant que cela ne change pas dans une
-     * prochaine version) </p>
-     * <p>
-     * exemple d'utilisation classique : null null     {@code
-     *         try (PreparedStatement pst = con.prepareStatement(
-     * "create table test("
-     * + sqlForGeneratedKeys(con, "id") + ","
-     * + "  nom varchar(30)"
-     * + ")"
-     * )) {
-     * pst.executeUpdate();
-     * }
-     * }
-     * </p>
-     *
-     * @param con
-     * @param nomColonne le nom de la colonne contenant la clé primaire. Par
-     * exemple "id"
-     * @return
-     * @throws SQLException
-     */
-    public static String sqlForGeneratedKeys(Connection con, String nomColonne) throws SQLException {
-        String sgbdName = con.getMetaData().getDatabaseProductName();
-        if (sgbdName.equals("MySQL")) {
-            return nomColonne + "  INT AUTO_INCREMENT PRIMARY KEY";
-        } else {
-            return nomColonne + " INT GENERATED ALWAYS AS IDENTITY PRIMARY KEY";
-        }
-    }
-    
 }
